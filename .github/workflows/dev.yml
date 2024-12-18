@@ -45,5 +45,7 @@ jobs:
 
       - name: Merge dev into staging
         run: |
-          git merge dev
+          git checkout staging
+          git merge dev --allow-unrelated-histories
           git push origin staging
+
