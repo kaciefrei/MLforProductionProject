@@ -1,28 +1,39 @@
 from flask import Flask, request, jsonify
-from flask_cors import CORS  # Importer CORS
 import numpy as np
-from tensorflow.keras.models import load_model
-from sklearn.preprocessing import StandardScaler
-import joblib
+import tflite_runtime.interpreter as tflite
+from flask_cors import CORS
 
 # Initialisation de l'application Flask
 app = Flask(__name__)
+CORS(app)
 
-# Activer CORS pour autoriser les requêtes venant de n'importe quelle origine (ou spécifier ton frontend)
-CORS(app, resources={r"/predict": {"origins": "*"}})  # Autorise toutes les origines sur la route /predict
+# Charger le modèle TFLite
+interpreter = tflite.Interpreter(model_path="models/forest_fire_model.tflite")
+interpreter.allocate_tensors()
 
-# Charger le modèle Deep Learning
-model = load_model("models/forest_fire_model_dl.h5")
+# Récupérer les détails des entrées et sorties
+input_details = interpreter.get_input_details()
+output_details = interpreter.get_output_details()
 
-# Charger le scaler pour la normalisation
-scaler = joblib.load("models/scaler.pkl")  # Sauvegarde du scaler après prétraitement des données
+# Fonction de prédiction
+def predict(features):
+    # Mettre en forme les données pour l'entrée
+    features = np.array(features, dtype=np.float32).reshape(input_details[0]['shape'])
+    
+    # Passer les données au modèle
+    interpreter.set_tensor(input_details[0]['index'], features)
+    interpreter.invoke()
+
+    # Récupérer le résultat
+    prediction = interpreter.get_tensor(output_details[0]['index'])
+    return prediction
 
 @app.route("/")
 def home():
     return "Algerian Forest Fires Prediction API is running!"
 
 @app.route("/predict", methods=["POST"])
-def predict():
+def predict_route():
     try:
         # Récupérer les données du formulaire (JSON envoyé par le frontend)
         data = request.json
@@ -39,14 +50,8 @@ def predict():
             data["FWI"]
         ]
 
-        # Convertir en array NumPy
-        features = np.array(features).reshape(1, -1)
-
-        # Normaliser les données avec le scaler
-        features_scaled = scaler.transform(features)
-
-        # Prédire avec le modèle
-        prediction = model.predict(features_scaled)
+        # Appeler la fonction de prédiction
+        prediction = predict(features)
 
         # Arrondir la prédiction à 0 ou 1
         result = int(prediction[0][0] > 0.5)
@@ -57,6 +62,5 @@ def predict():
     except Exception as e:
         return jsonify({"error": str(e)})
 
-# Lancer le serveur Flask
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=5000)
+    app.run(host="0.0.0.0", port=5000)
