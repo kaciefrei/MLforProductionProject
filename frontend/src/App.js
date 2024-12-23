@@ -24,7 +24,8 @@ function App() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch("http://127.0.0.1:5000/predict", {
+      // Remplacez l'URL locale par l'URL de production du backend
+      const response = await fetch("https://forest-fire-backend-production.up.railway.app/predict", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
