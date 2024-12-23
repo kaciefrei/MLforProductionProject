@@ -6,7 +6,9 @@ import os
 
 # Initialisation de l'application Flask
 app = Flask(__name__)
+
 CORS(app)
+CORS(app, resources={r"/predict": {"origins": "https://forest-fire-frontend-production.up.railway.app"}})
 
 # Charger le modèle TFLite
 interpreter = tflite.Interpreter(model_path="models/forest_fire_model.tflite")
