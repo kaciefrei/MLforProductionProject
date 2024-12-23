@@ -4,10 +4,10 @@ import tflite_runtime.interpreter as tflite
 from flask_cors import CORS
 import os
 
-# Initialisation de l'application Flask 
+# Initialisation de l'application Flask
 app = Flask(__name__)
 
-# CORS: Permettre l'accès depuis un domaine spécifique
+# Autoriser les CORS pour tous les domaines (ou spécifiez votre domaine frontend)
 CORS(app, resources={r"/predict": {"origins": "https://forest-fire-frontend-production.up.railway.app"}})
 
 # Charger le modèle TFLite
@@ -30,8 +30,16 @@ def predict(features):
 def home():
     return "Algerian Forest Fires Prediction API is running!"
 
-@app.route("/predict", methods=["POST"])
+@app.route("/predict", methods=["POST", "OPTIONS"])
 def predict_route():
+    if request.method == "OPTIONS":
+        # Répondre à la requête OPTIONS avec les en-têtes CORS appropriés
+        response = jsonify({"message": "CORS preflight"})
+        response.headers.add('Access-Control-Allow-Origin', 'https://forest-fire-frontend-production.up.railway.app')
+        response.headers.add('Access-Control-Allow-Methods', 'POST, OPTIONS')
+        response.headers.add('Access-Control-Allow-Headers', 'Content-Type, Authorization, Accept')
+        return response
+
     try:
         # Récupérer les données du formulaire (JSON envoyé par le frontend)
         data = request.json
@@ -62,5 +70,5 @@ def predict_route():
 
 
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))
+    port = int(os.environ.get("PORT", 5000))  # Utilise le port spécifié par Railway ou 5000 par défaut
     app.run(host="0.0.0.0", port=port)

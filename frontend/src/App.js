@@ -16,6 +16,16 @@ function App() {
 
   const [result, setResult] = useState(null);
 
+  // Fonction pour gérer les changements dans les champs du formulaire
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,
+      [name]: value,
+    });
+  };
+
+  // Fonction de soumission du formulaire
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -27,7 +37,10 @@ function App() {
         body: JSON.stringify(formData),
       });
       const data = await response.json();
-      setResult(data);
+      setResult({
+        risk_level: data.prediction === 1 ? "High Risk" : "Low Risk",
+        prediction_value: data.prediction,
+      });
     } catch (error) {
       console.error("Error:", error);
     }
