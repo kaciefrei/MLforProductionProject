@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify
 import numpy as np
 import tflite_runtime.interpreter as tflite
 from flask_cors import CORS
+import os
 
 # Initialisation de l'application Flask
 app = Flask(__name__)
@@ -62,5 +63,7 @@ def predict_route():
     except Exception as e:
         return jsonify({"error": str(e)})
 
+
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000)
+    port = int(os.environ.get("PORT", 5000))  # Utilise le port spécifié par Railway ou 5000 par défaut
+    app.run(host="0.0.0.0", port=port)
