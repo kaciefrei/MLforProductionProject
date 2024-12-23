@@ -16,15 +16,9 @@ function App() {
 
   const [result, setResult] = useState(null);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      // Remplacez l'URL locale par l'URL de production du backend
       const response = await fetch("https://forest-fire-backend-production.up.railway.app/predict", {
         method: "POST",
         headers: {
