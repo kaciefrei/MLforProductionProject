@@ -4,7 +4,7 @@ import tflite_runtime.interpreter as tflite
 from flask_cors import CORS
 import os
 
-# Initialisation de l'application Flask
+# Initialisation de l'application Flask 
 app = Flask(__name__)
 
 # CORS: Permettre l'accès depuis un domaine spécifique
