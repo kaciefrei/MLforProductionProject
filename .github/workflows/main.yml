@@ -47,4 +47,8 @@ jobs:
           docker push ${{ secrets.DOCKER_USERNAME }}/forest-fire-frontend:latest
           
       - name: Run model training and logging
+<<<<<<< HEAD
         run: python ml/scripts/train_and_track_model.py
+=======
+        run: python ml/scripts/train_and_track_model.py
+>>>>>>> e8b24db55834814b176cc505566f126deaf8271e
