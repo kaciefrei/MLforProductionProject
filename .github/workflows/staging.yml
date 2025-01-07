@@ -1,0 +1,33 @@
+name: Dev push
+
+on:
+  push:
+    branches:
+      - staging
+
+jobs:
+  build_test:
+      runs-on: ubuntu-latest
+      steps:
+        - name: Checkout code
+          uses: actions/checkout@v3
+  
+        - name: Python
+          uses: actions/setup-python@v4
+          with:
+            python-version: '3.11'
+  
+        - name: Dependencies
+          run: |
+            python -m pip install --upgrade pip
+            pip install -r requirements.txt
+  
+        - name: Run all tests
+          run: pytest
+  
+        - name: Push to prod
+          run: |
+            git config user.name "GitHub Actions"
+            git config user.email "actions@github.com"
+            git checkout -b main
+            git push origin main

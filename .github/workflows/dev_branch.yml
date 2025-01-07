@@ -1,0 +1,21 @@
+name: Dev push
+
+on:
+  push:
+    branches:
+      - dev
+
+jobs:
+  push:
+    runs-on: ubuntu-latest
+      steps:
+        - name: Checkout 
+          uses: actions/checkout@v3
+  
+        - name: Merge
+          uses: devmasx/merge-branch@master
+          with:
+            type: now
+            from_branch: dev
+            target_branch: staging
+            github_token: ${{ secrets.GITHUB_TOKEN }}
