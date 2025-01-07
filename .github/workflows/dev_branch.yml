@@ -9,13 +9,35 @@ jobs:
   push:
     runs-on: ubuntu-latest
     steps:
-        - name: Checkout 
-          uses: actions/checkout@v3
-  
-        - name: Merge
-          uses: devmasx/merge-branch@master
-          with:
-            type: now
-            from_branch: dev
-            target_branch: staging
-            github_token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Checkout
+        uses: actions/checkout@v3
+        
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'  # Vous pouvez ajuster la version de Python en fonction de votre projet
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r backend/requirements.txt  # Installer les dépendances du projet depuis le dossier 'backend'
+
+      - name: Run unit tests
+        run: |
+          python -m unittest backend/test_predict.py  # Exécute 'test_predict.py'
+        
+      - name: Run integration tests
+        run: |
+          python -m unittest backend/test_integration.py  # Exécute 'test_integration.py'
+        
+      - name: Run end-to-end tests
+        run: |
+          python -m unittest backend/test_e2e.py  # Exécute 'test_e2e.py'
+
+      - name: Merge
+        uses: devmasx/merge-branch@master
+        with:
+          type: now
+          from_branch: dev
+          target_branch: staging
+          github_token: ${{ secrets.GITHUB_TOKEN }}
