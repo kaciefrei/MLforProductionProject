@@ -1,9 +1,11 @@
-name: Dev push
+name: Staging push
 
 on:
-  push:
-    branches:
-      - staging
+  workflow_dispatch:
+  workflow_run:
+    workflows: ['Dev push']
+    types: [completed]
+
 
 jobs:
   build_test:
