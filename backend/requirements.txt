@@ -1,6 +1,6 @@
 Flask==2.2.2
 Werkzeug==2.2.2
-numpy==1.22.0
+numpy==1.21.6
 scikit-learn==1.0.2
 joblib==1.1.0
 flask-cors==2.1.3
